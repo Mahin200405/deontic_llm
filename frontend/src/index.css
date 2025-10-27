@@ -1,0 +1,167 @@
+/* index.css — Tailwind v4 style
+   - Keep all color values in HSL components (no hsl() wrapper) in :root/.dark
+   - Map them to Tailwind color tokens with @theme so classes like bg-background work
+*/
+
+@import "tailwindcss";
+
+/* Make Tailwind color tokens point at your CSS vars */
+@theme {
+  /* Colors (Tailwind expects --color-*) */
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary-light: hsl(var(--primary-light));
+  --color-primary-glow: hsl(var(--primary-glow));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-surface: hsl(var(--surface));
+  --color-surface-hover: hsl(var(--surface-hover));
+
+  --color-status-ok: hsl(var(--status-ok));
+  --color-status-refine: hsl(var(--status-refine));
+  --color-status-review: hsl(var(--status-review));
+
+  /* Radius, shadows, gradients exposed as tokens (optional) */
+  --radius: var(--radius);
+  --shadow-soft: var(--shadow-soft);
+  --shadow-medium: var(--shadow-medium);
+  --gradient-primary: var(--gradient-primary);
+  --gradient-subtle: var(--gradient-subtle);
+}
+
+/* Your design system (HSL components only) */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    /* Legal tech indigo/blue */
+    --primary: 231 48% 48%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 231 48% 58%;
+    --primary-glow: 231 48% 65%;
+
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 220 13% 96%;
+    --muted-foreground: 220 9% 46%;
+
+    --accent: 231 48% 95%;
+    --accent-foreground: 231 48% 48%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 231 48% 48%;
+
+    /* Status colors */
+    --status-ok: 142 71% 45%;
+    --status-refine: 38 92% 50%;
+    --status-review: 0 84% 60%;
+
+    /* Subtle surface */
+    --surface: 220 14% 98%;
+    --surface-hover: 220 14% 96%;
+
+    --radius: 0.5rem;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(231 48% 48%), hsl(231 48% 58%));
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%), hsl(220 14% 98%));
+
+    /* Shadows */
+    --shadow-soft: 0 2px 8px -2px hsl(222 47% 11% / 0.08);
+    --shadow-medium: 0 4px 16px -4px hsl(222 47% 11% / 0.12);
+  }
+
+  .dark {
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 14%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 14%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 231 48% 58%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 231 48% 68%;
+    --primary-glow: 231 48% 75%;
+
+    --secondary: 217 33% 18%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217 33% 18%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 217 33% 20%;
+    --accent-foreground: 231 48% 68%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217 33% 18%;
+    --input: 217 33% 18%;
+    --ring: 231 48% 58%;
+
+    --status-ok: 142 71% 45%;
+    --status-refine: 38 92% 50%;
+    --status-review: 0 84% 60%;
+
+    --surface: 222 47% 14%;
+    --surface-hover: 217 33% 18%;
+
+    --shadow-soft: 0 2px 8px -2px hsl(0 0% 0% / 0.3);
+    --shadow-medium: 0 4px 16px -4px hsl(0 0% 0% / 0.4);
+  }
+}
+
+/* Base element styles that leverage the tokens */
+@layer base {
+  *, ::before, ::after {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    background-image: var(--gradient-subtle);
+  }
+}
+
+/* Optional helpers (keep if you use them)
+:root { color-scheme: light dark; }  // lets OS dark-mode hint work with .dark toggling
+*/
