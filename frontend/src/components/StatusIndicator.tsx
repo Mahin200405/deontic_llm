@@ -6,6 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { API_ENDPOINTS } from "@/config/api";
 
 const StatusIndicator = () => {
   const [status, setStatus] = useState({
@@ -20,7 +21,7 @@ const StatusIndicator = () => {
 
   const checkStatus = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/status");
+      const response = await fetch(API_ENDPOINTS.status);
       if (response.ok) {
         const data = await response.json();
         setStatus(data);

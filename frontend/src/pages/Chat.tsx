@@ -12,6 +12,7 @@ import Navigation from "@/components/Navigation";
 import ChatMessage from "@/components/ChatMessages";
 import ClauseDisplay from "@/components/ClauseDisplay";
 import ContextCard from "@/components/ContextCard";
+import { API_ENDPOINTS } from "@/config/api";
 
 interface Message {
   role: "user" | "assistant";
@@ -85,7 +86,7 @@ const Chat = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8000/api/chat", {
+      const response = await fetch(API_ENDPOINTS.chat, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ thread_id: threadId, question: input }),

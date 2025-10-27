@@ -13,6 +13,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { useToast } from "@/hooks/use-toast";
+import { API_ENDPOINTS } from "@/config/api";
 
 interface ClauseDrawerProps {
   clause: any;
@@ -43,7 +44,7 @@ const ClauseDrawer = ({ clause, open, onClose, onSave }: ClauseDrawerProps) => {
 
     setSaving(true);
     try {
-      const response = await fetch(`http://localhost:8000/api/clause/${clause.id}`, {
+      const response = await fetch(API_ENDPOINTS.clause(clause.id), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

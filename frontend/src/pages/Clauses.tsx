@@ -22,6 +22,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import Navigation from "@/components/Navigation";
 import ClauseDrawer from "@/components/ClauseDrawer";
+import { API_ENDPOINTS } from "@/config/api";
 
 interface Clause {
   id: string;
@@ -66,7 +67,7 @@ const Clauses = () => {
       if (filters.article) params.append("article", filters.article);
       if (filters.search) params.append("search", filters.search);
 
-      const response = await fetch(`http://localhost:8000/api/clauses?${params}`);
+      const response = await fetch(`${API_ENDPOINTS.clauses}?${params}`);
       if (!response.ok) throw new Error("Failed to fetch clauses");
 
       const data = await response.json();
@@ -88,7 +89,7 @@ const Clauses = () => {
       if (filters.modality) params.append("modality", filters.modality);
       if (filters.article) params.append("article", filters.article);
 
-      const response = await fetch(`http://localhost:8000/api/clauses/export?${params}`);
+      const response = await fetch(`${API_ENDPOINTS.clausesExport}?${params}`);
       if (!response.ok) throw new Error("Export failed");
 
       const data = await response.json();

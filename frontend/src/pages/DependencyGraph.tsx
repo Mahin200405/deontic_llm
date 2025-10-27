@@ -27,6 +27,7 @@ import Navigation from "@/components/Navigation";
 import ClauseNode from "@/components/graph/ClauseNode";
 import ActorNode from "@/components/graph/ActorNode";
 import ArticleNode from "@/components/graph/ArticleNode";
+import { API_ENDPOINTS } from "@/config/api";
 
 const nodeTypes = {
   clause: ClauseNode,
@@ -64,7 +65,7 @@ const DependencyGraphInner = () => {
       if (filters.actor) params.append("actor", filters.actor);
 
       const response = await fetch(
-        `http://localhost:8000/api/graph?${params}`
+        `${API_ENDPOINTS.graph}?${params}`
       );
       if (!response.ok) throw new Error("Failed to fetch graph data");
 
