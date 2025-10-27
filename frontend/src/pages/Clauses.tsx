@@ -47,7 +47,7 @@ const Clauses = () => {
   const [clauses, setClauses] = useState<Clause[]>([]);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({
-    modality: "",
+    modality: "all",
     article: "",
     search: "",
   });
@@ -155,7 +155,7 @@ const Clauses = () => {
               <SelectValue placeholder="All Modalities" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Modalities</SelectItem>
+              <SelectItem value="all">All Modalities</SelectItem>
               <SelectItem value="OBLIGATION">Obligation</SelectItem>
               <SelectItem value="PROHIBITION">Prohibition</SelectItem>
               <SelectItem value="PERMISSION">Permission</SelectItem>

@@ -34,8 +34,25 @@ const Chat = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Generate thread ID on mount
-    setThreadId(`thread_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+    // Load thread ID and messages from localStorage on mount
+    const savedThreadId = localStorage.getItem('chatThreadId');
+    const savedMessages = localStorage.getItem('chatMessages');
+
+    if (savedThreadId) {
+      setThreadId(savedThreadId);
+    } else {
+      const newThreadId = `thread_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      setThreadId(newThreadId);
+      localStorage.setItem('chatThreadId', newThreadId);
+    }
+
+    if (savedMessages) {
+      try {
+        setMessages(JSON.parse(savedMessages));
+      } catch (error) {
+        console.error('Failed to parse saved messages:', error);
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -44,6 +61,20 @@ const Chat = () => {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
+
+  useEffect(() => {
+    // Save messages to localStorage whenever they change
+    if (messages.length > 0) {
+      localStorage.setItem('chatMessages', JSON.stringify(messages));
+    }
+  }, [messages]);
+
+  useEffect(() => {
+    // Save threadId to localStorage whenever it changes
+    if (threadId) {
+      localStorage.setItem('chatThreadId', threadId);
+    }
+  }, [threadId]);
 
   const handleSend = async () => {
     if (!input.trim() || loading) return;

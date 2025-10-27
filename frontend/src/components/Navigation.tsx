@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { MessageSquare, FileText } from "lucide-react";
+import { MessageSquare, FileText, Network } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Navigation = () => {
@@ -17,6 +17,16 @@ const Navigation = () => {
         >
           <MessageSquare className="h-4 w-4" />
           Chat
+        </Button>
+      </Link>
+      <Link to="/graph">
+        <Button
+          variant={isActive("/graph") ? "default" : "ghost"}
+          size="sm"
+          className="gap-2"
+        >
+          <Network className="h-4 w-4" />
+          Graph
         </Button>
       </Link>
       <Link to="/clauses">

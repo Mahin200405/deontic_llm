@@ -64,7 +64,7 @@ def api_clauses(
     search: str = Query(None)
 ):
     q = {}
-    if modality: q["modality"] = modality
+    if modality and modality != "all": q["modality"] = modality
     if article: q["article_id"] = article
     if actor: q["actor"] = actor
     if search: q["$text"] = {"$search": search}
@@ -91,8 +91,136 @@ def get_clause(id: str):
 @app.get("/api/clauses/export")
 def export_clauses(modality: str = Query(None), article: str = Query(None)):
     q = {}
-    if modality: q["modality"] = modality
+    if modality and modality!="all": q["modality"] = modality
     if article: q["article_id"] = article
     results = list(clauses.find(q).limit(500))
     for r in results: r.pop("_id", None)
     return {"data": results}
+
+@app.get("/api/graph")
+def api_graph(
+    modality: str = Query(None),
+    article: str = Query(None),
+    actor: str = Query(None),
+    limit: int = Query(100)
+):
+    """Generate dependency graph data from clauses"""
+    q = {}
+    if modality and modality != "all": q["modality"] = modality
+    if article: q["article_id"] = article
+    if actor: q["actor_canonical"] = actor
+
+    results = list(clauses.find(q).limit(limit))
+
+    # Build nodes and edges
+    nodes = []
+    edges = []
+    actor_nodes = {}
+    article_nodes = {}
+
+    for idx, clause in enumerate(results):
+        clause_id = str(clause.get("_id"))
+
+        # Create clause node
+        node = {
+            "id": clause_id,
+            "type": "clause",
+            "data": {
+                "label": f"{clause.get('article_id', 'Unknown')}: {clause.get('actor', 'Unknown')}",
+                "modality": clause.get("modality", "UNKNOWN"),
+                "actor": clause.get("actor_canonical") or clause.get("actor"),
+                "object": clause.get("object", ""),
+                "article_id": clause.get("article_id"),
+                "condition": clause.get("condition"),
+                "formula": clause.get("formulas", {}).get("deontic", ""),
+                "text": clause.get("text", "")[:100] + "..." if len(clause.get("text", "")) > 100 else clause.get("text", "")
+            },
+            "position": {"x": 0, "y": 0}  # Will be laid out by frontend
+        }
+        nodes.append(node)
+
+        # Track actors
+        actor_name = clause.get("actor_canonical") or clause.get("actor")
+        if actor_name and actor_name not in actor_nodes:
+            actor_nodes[actor_name] = {
+                "id": f"actor_{len(actor_nodes)}",
+                "type": "actor",
+                "data": {"label": actor_name, "type": "actor"},
+                "position": {"x": 0, "y": 0}
+            }
+
+        # Track articles
+        article_id = clause.get("article_id")
+        if article_id and article_id not in article_nodes:
+            article_nodes[article_id] = {
+                "id": f"article_{article_id}",
+                "type": "article",
+                "data": {"label": f"Article {article_id}", "article_id": article_id},
+                "position": {"x": 0, "y": 0}
+            }
+
+        # Create edges from clause to actor
+        if actor_name and actor_name in actor_nodes:
+            edges.append({
+                "id": f"edge_{clause_id}_to_actor_{actor_name}",
+                "source": clause_id,
+                "target": actor_nodes[actor_name]["id"],
+                "type": "actor_edge",
+                "label": "binds"
+            })
+
+        # Create edges from article to clause
+        if article_id and article_id in article_nodes:
+            edges.append({
+                "id": f"edge_article_{article_id}_to_{clause_id}",
+                "source": article_nodes[article_id]["id"],
+                "target": clause_id,
+                "type": "article_edge",
+                "label": "defines"
+            })
+
+    # Add actor and article nodes
+    nodes.extend(actor_nodes.values())
+    nodes.extend(article_nodes.values())
+
+    # Detect conditional dependencies
+    for i, clause1 in enumerate(results):
+        clause1_id = str(clause1.get("_id"))
+        condition = clause1.get("condition", "")
+
+        if condition:
+            # Check if condition mentions other actors
+            for j, clause2 in enumerate(results):
+                if i != j:
+                    clause2_id = str(clause2.get("_id"))
+                    actor2 = clause2.get("actor_canonical") or clause2.get("actor", "")
+                    object2 = clause2.get("object", "")
+
+                    # Simple string matching - mentions other clause's actor or object
+                    if actor2 and actor2.lower() in condition.lower():
+                        edges.append({
+                            "id": f"dep_{clause1_id}_on_{clause2_id}",
+                            "source": clause2_id,
+                            "target": clause1_id,
+                            "type": "dependency",
+                            "label": "condition"
+                        })
+                    elif object2 and object2.lower() in condition.lower():
+                        edges.append({
+                            "id": f"dep_{clause1_id}_on_{clause2_id}_obj",
+                            "source": clause2_id,
+                            "target": clause1_id,
+                            "type": "dependency",
+                            "label": "requires"
+                        })
+
+    return {
+        "nodes": nodes,
+        "edges": edges,
+        "stats": {
+            "total_clauses": len(results),
+            "total_actors": len(actor_nodes),
+            "total_articles": len(article_nodes),
+            "total_edges": len(edges)
+        }
+    }
