@@ -1,0 +1,22 @@
+# core orchestration
+langgraph==0.2.35
+langchain==0.3.7
+langchain-openai==0.2.6
+
+# models & utils
+pydantic==2.9.2
+python-dotenv==1.0.1
+tenacity==9.0.0
+ujson==5.10.0
+tiktoken==0.7.0
+
+# data & pdf
+pymongo==4.10.1
+pymupdf==1.24.10
+
+# splitters
+langchain-text-splitters==0.3.2
+pinecone>=3.0.0
+
+fastapi[standard]==0.112.0
+uvicorn[standard]==0.29.0
